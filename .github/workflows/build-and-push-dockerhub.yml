@@ -1,0 +1,32 @@
+name: Dockerhub
+on: workflow_dispatch
+
+jobs:
+  dockerhub-build:
+    runs-on: self-hosted
+    
+    steps:
+      - name: 'Cleanup build folder'
+        run: |
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Login to DockerHub
+        run: docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build Docker Image
+        run: docker buildx build -t ${{ secrets.DOCKERHUB_USERNAME }}/pgetinker-screenshot:latest .
+      
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/pgetinker-screenshot:latest
+
+      - name: Clean up Docker
+        run: docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/pgetinker-screenshot:latest
+
+      - name: Logout of DockerHub
+        run: docker logout
