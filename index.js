@@ -53,6 +53,12 @@ app.post("/", async(request, response) =>
         encoding: "binary",
     });
     
+    // close the tab
+    await page.close();
+    
+    // close the browser
+    await browser.close();
+
     response.statusCode = 200;
     response.header("Content-Type", "image/png");
     response.send(screenshot);
