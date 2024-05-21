@@ -24,7 +24,9 @@ app.post("/", async(request, response) =>
     }
     
     // open the browser
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        executablePath: '/usr/bin/google-chrome',
+    });
     
     // open the tab
     const page = await browser.newPage();
