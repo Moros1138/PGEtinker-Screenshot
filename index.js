@@ -26,41 +26,40 @@ app.post("/", async(request, response) =>
     // open the browser
     const browser = await puppeteer.launch({
         executablePath: '/usr/bin/google-chrome',
+        headless: true,
+        args: [
+            '--use-fake-ui-for-media-stream',
+            '--use-fake-device-for-media-stream',
+            '--autoplay-policy=user-gesture-required',
+            '--mute-audio',
+        ],
     });
-    
+
     // open the tab
     const page = await browser.newPage();
-    
     // set the page's content
     await page.setContent(request.body.html);
-
     // just a delay, gotta give PGE time to settle in
     await new Promise((resolve) => setTimeout(() => resolve(), 5000));
-    
     // get the PGE canvas
     const canvas = await page.$('canvas');
-    
     // get the size of the PGE canvas
     const boundingBox = await canvas.boundingBox();
-    
     // change the size of the viewport to match the PGE canvas size
     await page.setViewport({
         width: boundingBox.width,
         height: boundingBox.height
     });
-    
     // shutter --- click 
     const screenshot = await page.screenshot({
         type: "png",
         encoding: "binary",
     });
-    
     // close the tab
     await page.close();
-    
     // close the browser
     await browser.close();
-
+    
     response.statusCode = 200;
     response.header("Content-Type", "image/png");
     response.send(screenshot);
