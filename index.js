@@ -56,6 +56,14 @@ app.post("/", async(request, response) =>
         // just a delay, gotta give PGE time to settle in
         await new Promise((resolve) => setTimeout(() => resolve(), 5000));
         log("sleep 5 seconds");
+
+        // wait 10 seconds, if the browser is still running, kill the browser
+        setTimeout(async() =>
+        {
+            await browser.close();
+            console.log("killed browser due to timeout");
+        }, 10000);
+        
         // get the PGE canvas
         const canvas = await page.$('canvas');
         log("get the canvas");
