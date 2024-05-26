@@ -46,30 +46,40 @@ app.post("/", async(request, response) =>
 
     // open the tab
     const page = await browser.newPage();
+    log("new page");
     // set the page's content
     await page.setContent(request.body.html);
+    log("set html content");
     try
     {
         // just a delay, gotta give PGE time to settle in
         await new Promise((resolve) => setTimeout(() => resolve(), 5000));
+        log("sleep 5 seconds");
         // get the PGE canvas
         const canvas = await page.$('canvas');
+        log("get the canvas");
         // get the size of the PGE canvas
         const boundingBox = await canvas.boundingBox();
+        log("get bounding box");
         // change the size of the viewport to match the PGE canvas size
         await page.setViewport({
             width: boundingBox.width,
             height: boundingBox.height
         });
+        log("resize window to size of bounding box");
         // shutter --- click 
         const screenshot = await page.screenshot({
             type: "png",
             encoding: "binary",
         });
+        log("take screenshot");
         // close the tab
         await page.close();
+        log("close tab");
         // close the browser
         await browser.close();
+        log("close browser");
+        
         response.statusCode = 200;
         response.header("Content-Type", "image/png");
         response.send(screenshot);
