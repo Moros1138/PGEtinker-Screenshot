@@ -7,9 +7,18 @@ configDotenv();
 
 const app = express();
 const port = process.env.PORT || 6969;
+const mode = process.env.MODE || 'production';
 
 app.use(express.json({ limit: "20mb"}));
 app.use(morgan("combined"));
+
+function log(...args)
+{
+    if(mode === "production")
+        return;
+    
+    console.log(...args);
+}
 
 app.post("/", async(request, response) =>
 {
